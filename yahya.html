@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>تحميل بعد مشاهدة الإعلان — تحميل برو</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<style>
+  /* ===== قاعدة تصميم بسيطة وعصرية (Light / Dark) ===== */
+  :root{
+    --bg:#f4f7fb; --card:#ffffff; --text:#0f1724; --muted:#546174;
+    --accent:#2563eb; --accent-2:#7c3aed; --success:#10b981;
+    --glass: rgba(255,255,255,0.6);
+  }
+  [data-theme="dark"]{
+    --bg:#061026; --card:#07112a; --text:#e6eef8; --muted:#9fb2d1;
+    --accent:#3b82f6; --accent-2:#8b5cf6; --success:#34d399;
+    --glass: rgba(255,255,255,0.04);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    background:linear-gradient(180deg,var(--bg),#e9f0ff 80%);color:var(--text);
+    -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;padding:28px;
+  }
+  .wrap{max-width:1100px;margin:0 auto}
+  header{display:flex;align-items:center;gap:12px;justify-content:space-between}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{
+    width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;box-shadow:0 8px 24px rgba(37,99,235,0.14);
+  }
+  h1{font-size:20px;margin:0}
+  .controls{display:flex;gap:10px;align-items:center}
+  .search input{
+    width:360px;max-width:42vw;padding:10px 12px;border-radius:10px;border:1px solid rgba(15,23,36,0.06);
+    background:var(--card);color:var(--text)
+  }
+  .theme-toggle{
+    padding:8px 10px;border-radius:10px;border:0;background:transparent;color:var(--text);cursor:pointer;
+    display:flex;gap:8px;align-items:center;font-size:14px;
+  }
+
+  /* لوحة الملفات */
+  .card{background:var(--card);border-radius:14px;padding:18px;margin-top:18px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .topbar p{margin:0;color:var(--muted)}
+  .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:14px}
+  .file{
+    border-radius:12px;padding:12px;background:linear-gradient(180deg,var(--glass),transparent);
+    border:1px solid rgba(15,23,36,0.04);display:flex;flex-direction:column;gap:8px;
+  }
+  .file h3{margin:0;font-size:15px}
+  .meta{font-size:13px;color:var(--muted)}
+  .actions{margin-top:auto;display:flex;gap:8px;align-items:center}
+  button.btn{padding:8px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+  button.ghost{background:transparent;border:1px solid rgba(15,23,36,0.06);color:var(--text)}
+  a.view{padding:8px 10px;border-radius:10px;text-decoration:none;background:transparent;border:1px solid rgba(15,23,36,0.06);color:var(--muted);font-size:13px}
+
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+  .modal{background:var(--card);border-radius:12px;padding:18px;max-width:840px;width:100%;box-shadow:0 20px 60px rgba(2,6,23,0.5)}
+  .modal .head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .video-wrap{background:#000;border-radius:8px;padding:8px;display:flex;justify-content:center;align-items:center}
+  video{max-width:100%;border-radius:8px;display:block}
+
+  .status{font-size:13px;color:var(--muted);margin-top:8px}
+  .download-link{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--success);color:#fff;text-decoration:none}
+  .small{font-size:13px;color:var(--muted)}
+
+  /* footer */
+  footer{margin-top:18px;color:var(--muted);font-size:13px}
+
+  /* responsive */
+  @media (max-width:720px){
+    .search input{width:100%}
+    header{flex-direction:column;align-items:stretch;gap:12px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">DL</div>
+        <div>
+          <h1>يحيى مرزوك لتحميل ملفات تشخيص اعطال السيارات للمسلمين</h1>
+          <div class="small">تحميل الملفات بعد مشاهدة إعلان — تجريبي</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="search">
+          <input id="searchInput" placeholder="ابحث عن ملف بالاسم أو الوصف..." />
+        </div>
+        <button id="themeToggle" class="theme-toggle" title="تبديل الوضع">🌙 وضع داكن / ☀️ وضع فاتح</button>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="topbar">
+        <p>اضغط "مشاهدة الإعلان" لفتح النافذة. بعد انتهاء الإعلان (10 ثوانٍ) سيفعل زر التحميل.</p>
+        <div class="small">ملاحظة: صفحة تعمل بالكامل على المتصفح — روابط عامة أو خارجية.</div>
+      </div>
+
+      <div id="fileList" class="list" aria-live="polite"></div>
+
+      <footer>
+        <div>لإضافة ملفات: ضَعها في مجلد <code>files/</code> أو استخدم رابط خارجي مباشر في قائمة الملفات. لا أتحمل مسؤولية المحتوى غير القانوني.</div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal الإعلان -->
+  <div id="overlay" class="overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="head">
+        <div>
+          <strong id="modalTitle">مشاهدة الإعلان للحصول على الملف</strong>
+          <div id="modalFileName" class="small"></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="closeModal" class="ghost">إغلاق</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="video-wrap">
+          <!-- الفيديو التجريبي: استبدله بمصدر إعلان أو بملف إعلان لديك -->
+          <video id="adVideo" controls preload="metadata" crossorigin="anonymous">
+            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
+            متصفحك لا يدعم الفيديو.
+          </video>
+        </div>
+
+        <div id="modalStatus" class="status">الحالة: لم يبدأ الإعلان</div>
+
+        <div id="downloadArea"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ===========================
+   بيانات الملفات — عدّلها هنا
+   - href يمكن أن يكون: './files/name.pdf' أو رابط خارجي مباشر (https://...)
+   - ملاحظة قانونية: ضع فقط ملفات قانونية لديك حق نشرها
+   =========================== */
+const files = [
+  // مثال ملف محلي (إذا رفعت ملفًا داخل مجلد files/)
+  { id:'f1', name:'مرحبا لدينا برنامج autodata ', desc:'دليل PDF تعليمي', href:'https://www.mediafire.com/file/dcho545ygc87xov/Autodata_3.45.rar' },
+
+  // مثال رابط خارجي مباشر (صالح إذا الرابط مباشر للملف)
+  { id:'f2', name:'هنا لدينا رابط للبرنامج renolinkة', desc:'PNG للتجربة', href:'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj_jV1xx7pDIQ6YvxZjaLUsSOtBAOdpUjTXfJtTy8TRtlQq2cRiPK4aTmvt9300v9MHCiV8hwKP9UdwBvLfVUe_fFObshJWDK558ytiwoE7HqzSWSVIJS9TdbkIwB_RXeCXT2iuG-g-UxMqhATChWNcaFIGSK-lul3-KPSq7apLxKYBGrswq5J3AiFO7g/s16000/best-download-programs-from-internet.png' },
+
+  // مثال رابط خارجي (مثل MEGA) — ملاحظات أدناه
+  { id:'f3', name:'—   لدينا برنامج kess و ktag مجانا للمسلمين ل', desc:'إن كان هذا رابطك الخاص وتملك حق نشره', href:'https://mega.nz/file/wHhXUT6L#Mr1AFoJEzij-OJW8ubrBVWkp6tQgfrsFGkY3L_pZip4' },
+
+  // ملف تجريبي يتم إنشاؤه محليًا (للاختبار)
+  { id:'f4', name:'مرحبا لدينا autocom الجديدة 2021', desc:'سينشأ داخل المتصفح للاختبار', href:'__GENERATE_DEMO__' }
+];
+
+/* ====== وظائف العرض والبحث ====== */
+const fileListEl = document.getElementById('fileList');
+const searchInput = document.getElementById('searchInput');
+const overlay = document.getElementById('overlay');
+const adVideo = document.getElementById('adVideo');
+const modalTitle = document.getElementById('modalTitle');
+const modalFileName = document.getElementById('modalFileName');
+const modalStatus = document.getElementById('modalStatus');
+const downloadArea = document.getElementById('downloadArea');
+const closeModalBtn = document.getElementById('closeModal');
+
+let currentFile = null;
+
+// عرض القائمة
+function renderList(filter=''){
+  fileListEl.innerHTML = '';
+  const q = (filter||'').trim().toLowerCase();
+  const shown = files.filter(f => (f.name+f.desc).toLowerCase().includes(q));
+  if (shown.length === 0) {
+    fileListEl.innerHTML = '<div style="grid-column:1/-1;color:var(--muted)">لا توجد ملفات تطابق البحث</div>';
+    return;
+  }
+  for (const f of shown) {
+    const div = document.createElement('div');
+    div.className = 'file';
+    div.innerHTML = `
+      <h3>${escapeHtml(f.name)}</h3>
+      <div class="meta">${escapeHtml(f.desc)}</div>
+      <div class="actions">
+        <button class="btn watch" data-id="${f.id}">مشاهدة الإعلان</button>
+        <a class="view" href="${escapeAttr(f.href)}" target="_blank" rel="noopener noreferrer">فتح/عرض</a>
+      </div>
+    `;
+    fileListEl.appendChild(div);
+  }
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return s ? s.replace(/"/g,'&quot;') : ''; }
+
+renderList();
+
+// بحث مباشر
+searchInput.addEventListener('input', e=> renderList(e.target.value));
+
+// فتح المودال وتهيئة الفيديو
+fileListEl.addEventListener('click', e=>{
+  const btn = e.target.closest('.watch');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  const f = files.find(x=>x.id===id);
+  if (!f) return;
+  openModal(f);
+});
+
+function openModal(file){
+  currentFile = file;
+  modalTitle.textContent = 'مشاهدة الإعلان للحصول على الملف';
+  modalFileName.textContent = file.name;
+  modalStatus.textContent = 'الحالة: لم يبدأ الإعلان';
+  downloadArea.innerHTML = '';
+  overlay.style.display = 'flex';
+  try{ adVideo.pause(); adVideo.currentTime = 0; }catch(e){}
+  adVideo.muted = false;
+  adVideo.dataset.maxSeen = 0;
+}
+
+// إغلاق المودال
+closeModalBtn.addEventListener('click', closeModal);
+overlay.addEventListener('click', e=> { if (e.target === overlay) closeModal(); });
+function closeModal(){
+  overlay.style.display = 'none';
+  try{ adVideo.pause(); adVideo.currentTime = 0; }catch(e){}
+  currentFile = null;
+}
+
+/* ===== التحكم بالفيديو وإظهار زر التحميل بعد 10 ثوانٍ =====
+   - هنا نطبّق منطق بسيط: بعد أن يصل الوقت المشاهد إلى 10s أو انتهاء الفيديو،
+     نفعّل زر التحميل. في النظام الحقيقي، يجب التحقق server-side أو اعتماد SDK المعلن.
+*/
+const ALLOWED_SECONDS = 10; // عدد ثواني الإعلان المطلوبة
+
+adVideo.addEventListener('timeupdate', () => {
+  const pct = Math.floor((adVideo.currentTime / Math.max(1, adVideo.duration)) * 100);
+  modalStatus.textContent = `الحالة: الإعلان يُشاهد — ${pct}% (${Math.floor(adVideo.currentTime)}s)`;
+  adVideo.dataset.maxSeen = Math.max(adVideo.dataset.maxSeen || 0, adVideo.currentTime);
+
+  if (adVideo.currentTime >= ALLOWED_SECONDS && !document.getElementById('dl-now')) {
+    enableDownload();
+  }
+});
+
+adVideo.addEventListener('ended', () => {
+  modalStatus.textContent = 'انتهى الإعلان';
+  if (!document.getElementById('dl-now')) enableDownload();
+});
+
+// تفعيل رابط التحميل
+function enableDownload(){
+  if (!currentFile) return;
+  downloadArea.innerHTML = '';
+
+  // حالة: إنشاء ملف تجريبي داخل المتصفح
+  if (currentFile.href === '__GENERATE_DEMO__'){
+    const blob = new Blob([`هذا ملف تجريبي تم إنشاؤه بعد مشاهدة الإعلان.\nالملف: ${currentFile.name}`], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.id = 'dl-now';
+    a.href = url;
+    a.download = currentFile.name.replace(/\s+/g,'_') + '.txt';
+    a.className = 'download-link';
+    a.textContent = 'تحميل الملف الآن (تجريبي)';
+    a.addEventListener('click', ()=> {
+      setTimeout(()=>{ URL.revokeObjectURL(url); downloadArea.innerHTML = '<div class="small">تم تنزيل الملف التجريبي.</div>'; }, 1500);
+    });
+    downloadArea.appendChild(a);
+    return;
+  }
+
+  // حالة: رابط خارجي مباشر (مثل رابط https://.../file.zip)
+  // ملاحظة: بعض الروابط (مثل MEGA) ليست روابط "direct download" سيعمل فتحها في تبويب جديد.
+  const a = document.createElement('a');
+  a.id = 'dl-now';
+  a.href = currentFile.href;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.className = 'download-link';
+  a.textContent = 'تحميل الملف الآن';
+  // إن كان رابط محلي (يبدأ بـ ./files/) نجعل التحميل مباشر
+  if (currentFile.href.startsWith('./') || currentFile.href.startsWith('/')) {
+    a.download = '';
+  }
+  downloadArea.appendChild(a);
+}
+
+/* ========== Theme Toggle ========== */
+const themeToggleBtn = document.getElementById('themeToggle');
+const root = document.documentElement;
+const saved = localStorage.getItem('dl_theme') || 'light';
+if (saved === 'dark') root.setAttribute('data-theme','dark'); else root.removeAttribute('data-theme');
+
+themeToggleBtn.addEventListener('click', ()=>{
+  if (root.getAttribute('data-theme') === 'dark'){ root.removeAttribute('data-theme'); localStorage.setItem('dl_theme','light'); }
+  else { root.setAttribute('data-theme','dark'); localStorage.setItem('dl_theme','dark'); }
+});
+
+/* ========== حماية بسيطة client-side لمنع القفز إلى نهاية (غير آمنة للإنتاج) ========== */
+adVideo.addEventListener('seeking', () => {
+  if (adVideo.currentTime > (adVideo.dataset.maxSeen || 0) + 0.6) {
+    adVideo.currentTime = Math.min(adVideo.dataset.maxSeen || 0, adVideo.currentTime);
+  }
+});
+
+/* ========== تلميحات للمستخدم حول MEGA ========== */
+/*
+  - إن كنت تريد استخدام رابط MEGA (مثال: https://mega.nz/...#KEY):
+    ضع الرابط كاملاً في الحقل href كما في الملف التجريبي أعلاه (f3).
+  - ملاحظة: روابط MEGA عادة تفتح واجهة MEGA ولا تكون دائماً "direct-download". 
+    سيعمل الزر هنا بفتح رابط MEGA في تبويب جديد ليبدأ المستخدم التحميل وفق MEGA.
+  - إذا أردت روابط تنزيل مباشرة ومستقرة (presigned URLs) تحتاج خادماً يقدم روابط موقتة.
+*/
+
+</script>
+</body>
+</html>
